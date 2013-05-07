@@ -1,0 +1,4 @@
+MegaValidator
+=============
+
+JavaScript object validator
