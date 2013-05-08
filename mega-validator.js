@@ -25,11 +25,11 @@ MegaValidator.strictlyConditions = false;
  * @param  {mixed} value Валидируемое значение
  * @return {boolean} Результат
  */
-MegaValidator.maybeNull = function (value) {
+MegaValidator.maybeNull = function (value) { 
 	return !MegaValidator.strictlyConditions && MegaValidator.isNull(value);
 }
 
-MegaValidator.isNull = function (value) {
+MegaValidator.isNull = function (value) { 
 	return (typeof value === 'number' && isNaN(value)) || value === undefined || value === null || value === '';
 }
 
@@ -39,16 +39,16 @@ MegaValidator.isNull = function (value) {
  * @param {function} validFunction  Функция валидации
  * @param {string} defaultMessage Дефолтное сообщение об ошибке
  */
-MegaValidator.addValidator = function (name, validFunction, defaultMessage, required) {
-	if (name in MegaValidator.validators)
-	{
+MegaValidator.addValidator = function (name, validFunction, defaultMessage, required) { 
+	if (name in MegaValidator.validators) {
 		throw new Error('Same validator "' + name + '" is already exists');
 	}
 	MegaValidator.validators[name] = validFunction;
 	MegaValidator.defaultMessages[name] = defaultMessage;
 
-	if (required === true)
+	if (required === true) {
 		MegaValidator.requiredValidators.push(name);
+	}
 }
 
 /**
@@ -56,9 +56,8 @@ MegaValidator.addValidator = function (name, validFunction, defaultMessage, requ
  * @param {string} name           Имя
  * @param {function} moduleFunction Угадай
  */
-MegaValidator.addModule = function (name, moduleFunction) {
-	if (name in MegaValidator.modules)
-	{
+MegaValidator.addModule = function (name, moduleFunction) { 
+	if (name in MegaValidator.modules) {
 		throw new Error('Same module "' + name + '" is already exists');
 	}
 	MegaValidator.modules[name] = moduleFunction;
@@ -85,11 +84,11 @@ MegaValidator.jQueryMapper = {
  */
 MegaValidator.validate = function(object, validatorMaps, forceReturn) {
 
-	if (typeof forceReturn == 'undefined')
+	if (typeof forceReturn == 'undefined') {
 		forceReturn = false;
+	}
 
-	if ('validators' in validatorMaps) // вроде как к объекту применяют кусок объекта валидации
-	{
+	if ('validators' in validatorMaps) { // вроде как к объекту применяют кусок объекта валидации
 		object = {
 			object: object
 		};
@@ -102,19 +101,18 @@ MegaValidator.validate = function(object, validatorMaps, forceReturn) {
 		return (!forceReturn && $.isEmptyObject(errors)) ? true : errors.errors;
 	}
 
-	if (!object)
-	{
+	if (!object) {
 		throw new Error('Nothing to validate :(');
 	}
 	var errors = {};
-	for (var fieldName in validatorMaps)
-	{
+	for (var fieldName in validatorMaps) {
 		var item = validatorMaps[fieldName];
 
 		var fieldErrors = MegaValidator.validateField(object, fieldName, item, validatorMaps, forceReturn);
 
-		if (forceReturn || fieldErrors !== true)
+		if (forceReturn || fieldErrors !== true) {
 			errors[fieldName] = fieldErrors;
+		}
 	}
 
 	MegaValidator.lastResult = errors;
@@ -133,24 +131,19 @@ MegaValidator.validate = function(object, validatorMaps, forceReturn) {
  */
 MegaValidator.validateForm = function(form, validatorMaps, events, object) {
 	var validatorMapsCopy = $.extend(true, {}, validatorMaps);
-	for (var field in validatorMapsCopy)
-	{
-		if (!(jQuery.isPlainObject(validatorMapsCopy[field]) && ('validators' in validatorMapsCopy[field])))
-		{
+	for (var field in validatorMapsCopy) {
+		if (!(jQuery.isPlainObject(validatorMapsCopy[field]) && ('validators' in validatorMapsCopy[field]))) {
 			validatorMapsCopy[field] = {
 				validators: validatorMapsCopy[field]
 			};
 		}
-		if (validatorMapsCopy[field].target !== null)
-		{
+		if (validatorMapsCopy[field].target !== null) {
 			validatorMapsCopy[field].target = true;
 		}
-		if (validatorMapsCopy[field].form !== null)
-		{
+		if (validatorMapsCopy[field].form !== null) {
 			validatorMapsCopy[field].form = form;
 		}
-		if (validatorMapsCopy[field].valueFromTarget !== null)
-		{
+		if (validatorMapsCopy[field].valueFromTarget !== null) {
 			validatorMapsCopy[field].valueFromTarget = true;
 		}
 	}
@@ -158,24 +151,20 @@ MegaValidator.validateForm = function(form, validatorMaps, events, object) {
 	var res = MegaValidator.validate(object === null ? {} : object, validatorMapsCopy, true);
 	var isValid = MegaValidator.isValidResult(res);
 
-	if (events !== null && 'errorPlacement' in events)
-	{
-		for (var field in res)
-		{
-			if (!jQuery.isEmptyObject(res[field].errors))
-				for (var error in res[field].errors)
-				{
+	if (events !== null && 'errorPlacement' in events) {
+		for (var field in res) {
+			if (!jQuery.isEmptyObject(res[field].errors)) {
+				for (var error in res[field].errors) {
 					events.errorPlacement(res[field].errors[error], res[field].target);
 					break;
 				}
-			else
+			} else {
 				events.errorPlacement('', res[field].target);
+			}
 		}
 	}
-	if (events !== null && 'success' in events && isValid)
-	{
-		for (var field in res)
-		{
+	if (events !== null && 'success' in events && isValid) {
+		for (var field in res) {
 			events.success(res[field].target);
 		}
 	}
@@ -187,20 +176,19 @@ MegaValidator.validateForm = function(form, validatorMaps, events, object) {
  * @param  {object}  validationResult Результат валидации
  * @return {Boolean}                  Валидность результата
  */
-MegaValidator.isValidResult = function(validationResult)
-{
-	if (validationResult === true)
+MegaValidator.isValidResult = function(validationResult) { 
+	if (validationResult === true) {
 		return true;
-	if ('errors' in validationResult)
+	}
+	if ('errors' in validationResult) {
 		validationResult = validationResult.errors;
-	for (var field in validationResult)
-	{
-		if (jQuery.isPlainObject(validationResult[field]))
-		{
-			if ('errors' in validationResult[field] && !jQuery.isEmptyObject(validationResult[field].errors))
+	}
+	for (var field in validationResult) { 
+		if (jQuery.isPlainObject(validationResult[field])) { 
+			if ('errors' in validationResult[field] && !jQuery.isEmptyObject(validationResult[field].errors)) {
 				return false;
-		}
-		else
+			}
+		} else
 			return false;
 	}
 	return true;
@@ -214,8 +202,7 @@ MegaValidator.isValidResult = function(validationResult)
  * @param  {object}  object        Объект, в который соберуться поля формы
  * @return {Boolean}               Валидность формы
  */
-MegaValidator.isValidForm = function(form, validatorMaps, events, object)
-{
+MegaValidator.isValidForm = function(form, validatorMaps, events, object) { 
 	return MegaValidator.isValidResult(MegaValidator.validateForm(form, validatorMaps, events, object));
 }
 
@@ -225,8 +212,7 @@ MegaValidator.isValidForm = function(form, validatorMaps, events, object)
  * @param  {object}  validatorMaps Маппер валидации
  * @return {Boolean}               Валидность объекта
  */
-MegaValidator.isValid = function(object, validatorMaps)
-{
+MegaValidator.isValid = function(object, validatorMaps) { 
 	return MegaValidator.validate(object, validatorMaps) === true;
 }
 
@@ -236,39 +222,29 @@ MegaValidator.isValid = function(object, validatorMaps)
  * @param  {jQueryValidator} jQueryValidatorMaps Валидатор для jquery
  * @return {MegaValidator.validatorMaps}		Маппер валидации для использования в функции MegaValidator.validate
  */
-MegaValidator.validatorMapsFromJQuery = function(jQueryValidatorMaps)
-{
+MegaValidator.validatorMapsFromJQuery = function(jQueryValidatorMaps) { 
 	var validatorMaps = {};
-	for (var field in jQueryValidatorMaps.rules)
-	{
+	for (var field in jQueryValidatorMaps.rules) { 
 		validatorMaps[field] = {
 			validators: $.extend(true, {}, jQueryValidatorMaps.rules[field])
 		};
 
-		for (var v in validatorMaps[field].validators)
-		{
+		for (var v in validatorMaps[field].validators) { 
 			values = jQuery.isArray(validatorMaps[field].validators[v]) ? validatorMaps[field].validators[v] : [validatorMaps[field].validators[v]];
 
-			if (v in MegaValidator.jQueryMapper)
-			{
+			if (v in MegaValidator.jQueryMapper) { 
 				newField = MegaValidator.jQueryMapper[v];
 				newValues = values;
 
-				if (jQuery.isArray(MegaValidator.jQueryMapper[v]))
-				{
+				if (jQuery.isArray(MegaValidator.jQueryMapper[v])) { 
 					newField = MegaValidator.jQueryMapper[v][0];
 					newValues = jQuery.isArray(MegaValidator.jQueryMapper[v][1]) ? MegaValidator.jQueryMapper[v][1] : [MegaValidator.jQueryMapper[v][1]];
-					for (var value in newValues)
-					{
-						if (jQuery.isPlainObject(newValues[value]))
-						{
-							for (var _value in newValues[value])
-							{
+					for (var value in newValues) { 
+						if (jQuery.isPlainObject(newValues[value])) { 
+							for (var _value in newValues[value]) { 
 								newValues[value][_value] = eval(newValues[value][_value]);
 							}
-						}
-						else
-						{
+						} else { 
 							newValues[value] = values[value];
 						}
 					}
@@ -278,9 +254,7 @@ MegaValidator.validatorMapsFromJQuery = function(jQueryValidatorMaps)
 					values: newValues
 				};
 				delete validatorMaps[field].validators[v];
-			}
-			else
-			{
+			} else { 
 				validatorMaps[field].validators[v] = {
 					values: values
 				};
@@ -288,21 +262,14 @@ MegaValidator.validatorMapsFromJQuery = function(jQueryValidatorMaps)
 		}
 	}
 
-	for (var field in jQueryValidatorMaps.messages)
-	{
-		if (field in jQueryValidatorMaps.rules)
-		{
-			for (var v in jQueryValidatorMaps.messages[field])
-			{
-				if (v in jQueryValidatorMaps.rules[field])
-				{
-					if (v in MegaValidator.jQueryMapper)
-					{
+	for (var field in jQueryValidatorMaps.messages) { 
+		if (field in jQueryValidatorMaps.rules) { 
+			for (var v in jQueryValidatorMaps.messages[field]) { 
+				if (v in jQueryValidatorMaps.rules[field]) { 
+					if (v in MegaValidator.jQueryMapper) { 
 						var newField = jQuery.isArray(MegaValidator.jQueryMapper[v]) ? MegaValidator.jQueryMapper[v][0] : MegaValidator.jQueryMapper[v];
 						validatorMaps[field].validators[newField].message = jQueryValidatorMaps.messages[field][v];
-					}
-					else
-					{
+					} else { 
 						validatorMaps[field].validators[v].message = jQueryValidatorMaps.messages[field][v];
 					}
 				}
@@ -325,8 +292,6 @@ MegaValidator.validatorMapsFromJQuery = function(jQueryValidatorMaps)
 MegaValidator.validateField = function(object, fieldName, validatorMap, validatorMaps, forceReturn) {
 	var errors = {};
 
-	// if (validatorMap == null || validatorMap.length == 0 || jQuery.isEmptyObject(validatorMap))
-	// 	return true;
 
 	validatorMap = MegaValidator.normalizeValidatorMap(validatorMap);
 
@@ -338,13 +303,11 @@ MegaValidator.validateField = function(object, fieldName, validatorMap, validato
 
 	var additionalInfo = MegaValidator.applyModules( object, fieldName, validatorMap );
 
-	// поехали по валидаторам
-	for (var validatorName in validatorMap.validators)
-	{
-
+	for (var validatorName in validatorMap.validators) { 
 		// если валидатор не required, значение налл и это разрешено, то значение считается валидным
-		if ($.inArray(validatorName, MegaValidator.requiredValidators) == -1 && MegaValidator.maybeNull(object[fieldName]))
+		if ($.inArray(validatorName, MegaValidator.requiredValidators) == -1 && MegaValidator.maybeNull(object[fieldName])) {
 			continue;
+		}
 
 		var validatorOptions = validatorMap.validators[validatorName];
 
@@ -352,25 +315,24 @@ MegaValidator.validateField = function(object, fieldName, validatorMap, validato
 		
 		// валидация зависимых полей
 		var ok = true;
-		for (var i in values)
-		{
-			if (jQuery.isPlainObject(values[i]) && 'dependsField' in values[i])
-			{
+		for (var i in values) { 
+			if (jQuery.isPlainObject(values[i]) && 'dependsField' in values[i]) { 
 				var depFieldName = values[i].dependsField;
 				var fieldErrors = MegaValidator.validateField(object, depFieldName, validatorMaps[depFieldName], validatorMaps);
 
-				if (fieldErrors === true)
+				if (fieldErrors === true) {
 					values[i] = object[depFieldName];
-				else
-				{
+				} else { 
 					ok = false;
 					break;
 				}
 			}
 		}
 
-		if (!ok)
+		if (!ok) {
 			continue;
+
+		}
 
 		var result = MegaValidator.executeValidator( object[fieldName], validatorName, values );
 		
@@ -380,10 +342,8 @@ MegaValidator.validateField = function(object, fieldName, validatorMap, validato
 		}
 	}
 
-	for (var adInfo in additionalInfo)
-	{
-		if (jQuery.isPlainObject(additionalInfo[adInfo]) && 'errors' in additionalInfo[adInfo]) // модули тоже могут возвращать ошибки
-		{
+	for (var adInfo in additionalInfo) { 
+		if (jQuery.isPlainObject(additionalInfo[adInfo]) && 'errors' in additionalInfo[adInfo]) { // модули тоже могут возвращать ошибки
 			errors = $.extend(errors, additionalInfo[adInfo].errors);
 		}
 	}
@@ -401,8 +361,7 @@ MegaValidator.validateField = function(object, fieldName, validatorMap, validato
  * @return {boolean}           Результат валидации
  */
 MegaValidator.executeValidator = function(field, validator, values) {
-	if (!(validator in MegaValidator.validators) || !$.isFunction(MegaValidator.validators[validator]))
-	{
+	if (!(validator in MegaValidator.validators) || !$.isFunction(MegaValidator.validators[validator])) { 
 		throw new Error('Unknown validator "' + validator + '"');
 	}
 
@@ -431,18 +390,15 @@ MegaValidator.normalizeValidatorMap = function(validatorMap) {
 	
 	validatorMap = jQuery.extend(true, {}, validatorMap);
 
-	if (typeof validatorMap.validators == 'string') // 1 валидатор? хуле
-	{
+	if (typeof validatorMap.validators == 'string') { // 1 валидатор? хуле
 		validatorMap.validators = [validatorMap.validators];
 	}
 
 	// переводим validators в объект если что
-	if ($.isArray(validatorMap.validators))
-	{
+	if ($.isArray(validatorMap.validators)) { 
 		var temp = validatorMap.validators.slice();
 		validatorMap.validators = {};
-		for (var i = 0; i < temp.length; i++)
-		{
+		for (var i = 0; i < temp.length; i++) { 
 			var validatorName = temp[i];
 			validatorMap.validators[validatorName] = true;
 		}
@@ -464,13 +420,12 @@ MegaValidator.applyModules = function(object, fieldName, validatorMap) {
 	var additionalInfo = {};
 	
 	// остальная хуйня - это (ВНИМАНИЕ!) ..... "МОДУЛИ" блять
-	for (var moduleName in validatorMap)
-	{
-		if (moduleName in MegaValidator.modules)
-		{
+	for (var moduleName in validatorMap) { 
+		if (moduleName in MegaValidator.modules) { 
 			var res = MegaValidator.modules[moduleName].apply(validatorMap, [object, fieldName]);
-			if (res !== null)
+			if (res !== null) {
 				additionalInfo[moduleName] = res;
+			}
 		}
 	}
 
@@ -495,13 +450,14 @@ MegaValidator.getValues = function(object, validatorOptions) {
 		values = validatorOptions;
 	}
 
-	if (!jQuery.isArray(values))
+	if (!jQuery.isArray(values)) {
 		values = [values];
+	}
 
-	for (var i in values) // если что рубим функции
-	{
-		if (jQuery.isFunction(values[i]))
+	for (var i in values) { // если что рубим функции
+		if (jQuery.isFunction(values[i])) {
 			values[i] = values[i].apply(object);
+		}
 	}
 
 	return values;
@@ -531,8 +487,7 @@ MegaValidator.getMessage = function(object, validatorName, validatorOptions, val
 	}
 
 	// @dirtyHack хм
-	var formatString = function(string, values)
-	{
+	var formatString = function(string, values) { 
 		var args = jQuery.isArray(values) ? values : arguments.slice(1);
 
 		return string.replace(/{(\d+)}/g, function(match, number) {
@@ -667,16 +622,11 @@ MegaValidator.modules = {
 	// то, у чего есть свойство-название модуля
 	target: function(object, fieldName) {
 		// @dirtyHack почему? почему здесь изменяется this.target ?? это же сам мап валидации 0_Щ,
-		if (this.target === true)
-		{
+		if (this.target === true) { 
 			this.target = this.form ? $('[name=' + fieldName + ']', $(this.form)) : $('[name=' + fieldName + ']');
-		}
-		else if (jQuery.isFunction(this.target))
-		{
+		} else if (jQuery.isFunction(this.target)) { 
 			this.target = this.target.apply(object);
-		}
-		else if (typeof this.target === 'string')
-		{
+		} else if (typeof this.target === 'string') { 
 			this.target = $(this.target);
 		}
 		return this.target;
@@ -684,21 +634,23 @@ MegaValidator.modules = {
 	valueFromTarget: function(object, fieldName) { // вдруг нужно вытащить из таргета значение
 
 		var validateMap = this;
-		if (validateMap.valueFromTarget === false)
+		if (validateMap.valueFromTarget === false) {
 			return;
+		}
 
 		var val = null;
-		if (validateMap.valueFromTarget === true) // просто берём value из таргета
-		{
-			if (!('target' in validateMap))
+		if (validateMap.valueFromTarget === true) { // просто берём value из таргета
+			if (!('target' in validateMap)) {
 				throw new Error('Where is your target? oO');
+			}
 			val = validateMap.target.val(); // @dirtyHack а здесь? почему здесь параметр валидации используется как jquery объект???
 		} else if ($.isArray(validateMap.valueFromTarget)) { // valueFromTarget: [$('[name=email]').attr, 'data-value']
 			val = validateMap.valueFromTarget[0].apply( validateMap.target, validateMap.valueFromTarget.slice(1) ); // первым должна быть функция, дальше аргументы. если в функции будет this, то это будет таргет
 			// @dirtyHack опять...
 		} else {
-			if (!$.isFunction(validateMap))
+			if (!$.isFunction(validateMap)) {
 				throw new Error('WTF is "' + validateMap.valueFromTarget + '"');
+			}
 
 			val = validateMap.valueFromTarget[0].call();
 		}
@@ -712,8 +664,7 @@ MegaValidator.modules = {
 		return this.title;
 	},
 	objectValidator: function(object, fieldName) {
-		if (!MegaValidator.strictlyConditions && object[fieldName] == null)
-		{
+		if (!MegaValidator.strictlyConditions && object[fieldName] == null) { 
 			return null;
 		}
 
@@ -727,14 +678,14 @@ MegaValidator.modules = {
 		return objectErrors === true ? null : { errors: objectErrors };
 	},
 	'int': function(object, fieldName) {
-		if (this['int'] === true && MegaValidator.getRegExp('int').test(object[fieldName]))
+		if (this['int'] === true && MegaValidator.getRegExp('int').test(object[fieldName])) {
 			return object[fieldName] = parseInt(object[fieldName]);
+		}
 		// return NaN;
 	},
 
 	'float': function(object, fieldName) {
-		if (this['float'] === true && MegaValidator.getRegExp('float').test(object[fieldName]))
-		{
+		if (this['float'] === true && MegaValidator.getRegExp('float').test(object[fieldName])) { 
 			return object[fieldName] = parseFloat(object[fieldName]);
 		}
 		// return NaN;
@@ -744,39 +695,36 @@ MegaValidator.modules = {
 		// console.log(object[fieldName], MegaValidator.getRegExp('float').test(object[fieldName]));
 		// if (!MegaValidator.getRegExp('float').test(object[fieldName]))
 		// 	return NaN;
-		if (this.roundedFloat === true)
+		if (this.roundedFloat === true) {
 			return object[fieldName] = parseFloat(object[fieldName]);
-		else if (this['float'] !== false)
+		} else if (this['float'] !== false) {
 			return object[fieldName] = round(parseFloat(object[fieldName]), this.roundedFloat);
+		}
 	},
 
 	defaultValue: function(object, fieldName) {
-		if (object[fieldName] == null)
+		if (object[fieldName] == null) {
 			object[fieldName] = this.defaultValue;
+		}
 	},
 
 	unixTime: function(object, fieldName) {
-		if (this.unixTime !== false && object[fieldName] != null)
-		{
+		if (this.unixTime !== false && object[fieldName] != null) { 
 			var date = null;
-			if (date == null && $ != null && 'datepicker' in $)
-			{
+			if (date == null && $ != null && 'datepicker' in $) { 
 				var format = 'dd-mm-yy hh:mm';
-				if (typeof this.unixTime === 'string')
+				if (typeof this.unixTime === 'string') {
 					format = this.unixTime;
+				}
 				format = format.split(' ');
 
-				if ($.isArray(this.unixTime))
-				{
+				if ($.isArray(this.unixTime)) { 
 					format = this.unixTime;
 				}
 
-				if ($.isPlainObject(this.unixTime) && 'dateFormat' in this.unixTime && 'timeFormat' in this.unixTime)
-				{
+				if ($.isPlainObject(this.unixTime) && 'dateFormat' in this.unixTime && 'timeFormat' in this.unixTime) { 
 					format = this.unixTime;
-				}
-				else
-				{
+				} else { 
 					format = {
 						dateFormat: format[0],
 						timeFormat: format[1]
@@ -785,30 +733,31 @@ MegaValidator.modules = {
 
 				// <пиздатый парсинг дэйттайма>
 				var $div = $('<div>');
-				try
-				{
+				try { 
 					$div.datetimepicker(format);
 					$div.datetimepicker('setDate', object[fieldName]);
 					console.log(format, object[fieldName], $div.datetimepicker('getDate'));
 					date = $div.datetimepicker('getDate');//$.datepicker.parseDate(typeof this.unixTime === 'string' ? this.unixtime : "dd-mm-yy", object[fieldName])
 				}
-				catch (e)
-				{
+				catch (e) { 
 					console.error('Видно неправильный формат:', format, object[fieldName]);
 				}
 				// </пиздатый парсинг дэйттайма>
 
 			}
-			if (date == null)
+			if (date == null) {
 				date = Date.parse(object[fieldName]);
-			if (date != null && date instanceof Date)
+			}
+			if (date != null && date instanceof Date) {
 				return object[fieldName] = date.getTime() / 1000;
+			}
 		}
 	},
 
 	customFunction: function(object, fieldName) {
-		if (jQuery.isFunction(this.customFunction))
+		if (jQuery.isFunction(this.customFunction)) {
 			object[fieldName] = this.customFunction.apply(object);
+		}
 	},
 
 }
