@@ -50,9 +50,7 @@ Tutorial (rus)
 			},
 			// "модули"
 			target: $('[name=email]') // куда если что фокусить,
-			valueFromTarget: true // из таргета достанет
-			valueFromTarget: $('[name=email]').html // val, text
-			valueFromTarget: [$('[name=email]').attr, 'data-value']
+			valueFromTarget: true // из таргета достанет значение
 			valueFromTarget: function() {return round($('[name=email]').attr('data-value'), 2);},
 			valueFromTarget: function() {return round($(this).attr('data-value'), 2);},
 		}

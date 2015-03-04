@@ -665,6 +665,7 @@ MegaValidator.modules = {
         }
         return this.target;
     },
+    // какой-то очкень jQuery модуль
     valueFromTarget: function(object, fieldName) { // вдруг нужно вытащить из таргета значение
 
         var validateMap = this;
@@ -678,15 +679,12 @@ MegaValidator.modules = {
                 throw new Error('Where is your target? oO');
             }
             val = validateMap.target.val(); // @dirtyHack а здесь? почему здесь параметр валидации используется как jquery объект???
-        } else if ($.isArray(validateMap.valueFromTarget)) { // valueFromTarget: [$('[name=email]').attr, 'data-value']
-            val = validateMap.valueFromTarget[0].apply( validateMap.target, validateMap.valueFromTarget.slice(1) ); // первым должна быть функция, дальше аргументы. если в функции будет this, то это будет таргет
-            // @dirtyHack опять...
         } else {
             if (!$.isFunction(validateMap)) {
                 throw new Error('WTF is "' + validateMap.valueFromTarget + '"');
             }
 
-            val = validateMap.valueFromTarget[0].call();
+            val = validateMap.valueFromTarget[0].call(validateMap.target);
         }
 
         return object[fieldName] = val;
